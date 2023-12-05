@@ -78,13 +78,11 @@
           if test -e "./resume.nix"; then
             echo "Converting ./resume.nix to ./resume.json" 1>&2
             ${pkgs.nix}/bin/nix-instantiate --eval -E 'builtins.toJSON (import ./resume.nix)' \
-              | ${pkgs.jq}/bin/jq -r \
-              | ${pkgs.jq}/bin/jq > resume.json
+              | ${pkgs.lib.getExe pkgs.jq} -Rs 'fromjson | fromjson' > resume.json
           elif test -e "./resume.toml"; then
             echo "Converting ./resume.toml to ./resume.json" 1>&2
             ${pkgs.nix}/bin/nix-instantiate --eval -E 'builtins.toJSON (builtins.fromTOML (builtins.readFile ./resume.toml))' \
-              | ${pkgs.jq}/bin/jq -r \
-              | ${pkgs.jq}/bin/jq > resume.json
+              | ${pkgs.lib.getExe pkgs.jq} -Rs 'fromjson | fromjson' > resume.json
           elif [[ $yamlresume != "" ]]; then
             echo "Converting $yamlresume to ./resume.json" 1>&2
             ${pkgs.lib.getExe pkgs.yq-go} -o=json '.' "$yamlresume" > resume.json
